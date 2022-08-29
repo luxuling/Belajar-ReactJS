@@ -58,9 +58,6 @@ const counter = document.getElementById("counter");
 function App() {
   const [count, setCount] = React.useState(0);
   const [click, setClick] = React.useState(false);
-  React.useEffect(() => {
-    console.log(document.getElementById("num"));
-  }, []);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
     className: "py-2 px-3 shadow-slate-400 shadow-lg rounded-lg",
     onClick: function () {
@@ -236,11 +233,17 @@ function Todo() {
   function removeTodo(todoid) {
     const filteredTodos = todos.filter(todo => todo.id !== todoid);
     setTodos(filteredTodos);
+    cencelUpdate();
   }
 
   function editTodo(item) {
     setActivity(item.activity);
     setEdit(item);
+  }
+
+  function cencelUpdate() {
+    setActivity("");
+    setEdit({});
   }
 
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
@@ -263,7 +266,10 @@ function Todo() {
     type: "submit",
     className: "py-2 px-3 shadow-slate-400 shadow-lg rounded-lg cursor-pointer",
     onClick: submit
-  }, edit.id ? "simpan perubahan" : "tambah")), /*#__PURE__*/React.createElement("ul", {
+  }, edit.id ? "simpan perubahan" : "tambah"), edit.id && /*#__PURE__*/React.createElement("button", {
+    className: "py-2 px-3 shadow-slate-400 shadow-lg rounded-lg cursor-pointer",
+    onClick: cencelUpdate
+  }, "cencel")), /*#__PURE__*/React.createElement("ul", {
     className: "w-full px-4v list-disc"
   }, todos.map(item => {
     return /*#__PURE__*/React.createElement("li", {

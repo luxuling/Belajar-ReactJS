@@ -69,11 +69,6 @@ const element = document.getElementById("root")
     function App(){
         const [count, setCount] = React.useState(0)
         const [click, setClick] = React.useState(false)
-
-        React.useEffect(() => {
-          console.log(document.getElementById("num"))
-        },[])
-        
       return <>
             <button className="py-2 px-3 shadow-slate-400 shadow-lg rounded-lg" onClick={function(){
                 setCount(count-1)
@@ -228,10 +223,15 @@ function Todo(){
     function removeTodo(todoid){
         const filteredTodos = todos.filter((todo)=>todo.id !== todoid)
         setTodos(filteredTodos)
+        cencelUpdate()
     }
     function editTodo(item){
         setActivity(item.activity)
         setEdit(item)
+    }
+    function cencelUpdate(){
+        setActivity("")
+        setEdit({})
     }
     return <>
         <div className="my-16 flex flex-wrap justify-evenly w-1/2 h-auto">
@@ -242,6 +242,7 @@ function Todo(){
                 }} placeholder="masukan kegiatan anda" className="outline-none focus:border-b-2 focus:border-sky-300"/>
 
                 <button type="submit" className="py-2 px-3 shadow-slate-400 shadow-lg rounded-lg cursor-pointer" onClick={submit}>{edit.id ? "simpan perubahan":"tambah"}</button>
+                {edit.id && <button className="py-2 px-3 shadow-slate-400 shadow-lg rounded-lg cursor-pointer" onClick={cencelUpdate}>cencel</button>}
             </form>
             <ul className="w-full px-4v list-disc">
                 {todos.map((item)=>{
