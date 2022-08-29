@@ -195,12 +195,13 @@ function Todo(){
     const [activity, setActivity] = React.useState("")
     const [todos, setTodos] = React.useState([])
     const [edit ,setEdit] = React.useState({})
+    const [msg, setMsg] = React.useState("")
     React.useEffect(function(){
         console.log(todos)
     },[todos])
     function submit(event){
         event.preventDefault()
-
+        setMsg("")
         if(edit.id){
             const updateTodo = {
                 id: edit.id,
@@ -214,18 +215,35 @@ function Todo(){
             setEdit({})
             return
         }
+        if(activity.length == 0){
+            setMsg("*mohon diisi dulu!!")
+            return
+        }
         setTodos([...todos,{
             id : Date.now(),
             activity
         }])
+        
         setActivity("")
     }
+    function done(item){
+        const updateTodo = {
+            ...item,
+            done: item.done ? false : true
+        }
+        const indexTodo = todos.findIndex((value)=>value.id == item.id)
+        const updatedTodo = [...todos]
+        updatedTodo[indexTodo] = updateTodo
+        setTodos(updatedTodo)
+    }
+
     function removeTodo(todoid){
         const filteredTodos = todos.filter((todo)=>todo.id !== todoid)
         setTodos(filteredTodos)
         cencelUpdate()
     }
     function editTodo(item){
+        setMsg("")
         setActivity(item.activity)
         setEdit(item)
     }
@@ -236,7 +254,8 @@ function Todo(){
     return <>
         <div className="my-16 flex flex-wrap justify-evenly w-1/2 h-auto">
             <h1 className="text-2xl font-semibold text-slate-800">Todo list</h1>
-            <form action="" className="w-fullh-auto">
+            <form action="" className="w-fullh-auto mb-5">
+                {msg && <p className="text-pink-500">{msg}</p>}
                 <input type="text" name="" value={activity} onChange={function(event){
                     setActivity(event.target.value)
                 }} placeholder="masukan kegiatan anda" className="outline-none focus:border-b-2 focus:border-sky-300"/>
@@ -245,9 +264,13 @@ function Todo(){
                 {edit.id && <button className="py-2 px-3 shadow-slate-400 shadow-lg rounded-lg cursor-pointer" onClick={cencelUpdate}>cencel</button>}
             </form>
             <ul className="w-full px-4v list-disc">
+                {todos.length == 0 && <h1 className="text-center mt-5 text-lg font-medium">belum ada aktivitas</h1>}
                 {todos.map((item)=>{
                   return (
-                  <li key={item.id} className="p-2">{item.activity}
+                  <li key={item.id} className="p-2">
+                    <label htmlFor={item.id} className={!item.done ? "py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer mr-3 bg-pink-500" : "py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer mr-3 bg-lime-300"}>{!item.done ? "belum selesai" : "sudah selesai"}</label>
+                    <input type="checkbox" name="" id={item.id} className="mr-2 hidden"checked={item.done} onChange={done.bind(this,item)}/>
+                 {<span className="text-lg font-medium text-slate-800">{item.activity}</span>}
                   <button className="py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer ml-3" onClick={editTodo.bind(this, item)}>edit</button>
                   <button className="py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer ml-3" onClick={removeTodo.bind(this,item.id)}>hapus</button>
                   </li>

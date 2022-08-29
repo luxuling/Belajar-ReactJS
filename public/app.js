@@ -202,12 +202,14 @@ function Todo() {
   const [activity, setActivity] = React.useState("");
   const [todos, setTodos] = React.useState([]);
   const [edit, setEdit] = React.useState({});
+  const [msg, setMsg] = React.useState("");
   React.useEffect(function () {
     console.log(todos);
   }, [todos]);
 
   function submit(event) {
     event.preventDefault();
+    setMsg("");
 
     if (edit.id) {
       const updateTodo = {
@@ -223,11 +225,26 @@ function Todo() {
       return;
     }
 
+    if (activity.length == 0) {
+      setMsg("*mohon diisi dulu!!");
+      return;
+    }
+
     setTodos([...todos, {
       id: Date.now(),
       activity
     }]);
     setActivity("");
+  }
+
+  function done(item) {
+    const updateTodo = { ...item,
+      done: item.done ? false : true
+    };
+    const indexTodo = todos.findIndex(value => value.id == item.id);
+    const updatedTodo = [...todos];
+    updatedTodo[indexTodo] = updateTodo;
+    setTodos(updatedTodo);
   }
 
   function removeTodo(todoid) {
@@ -237,6 +254,7 @@ function Todo() {
   }
 
   function editTodo(item) {
+    setMsg("");
     setActivity(item.activity);
     setEdit(item);
   }
@@ -252,8 +270,10 @@ function Todo() {
     className: "text-2xl font-semibold text-slate-800"
   }, "Todo list"), /*#__PURE__*/React.createElement("form", {
     action: "",
-    className: "w-fullh-auto"
-  }, /*#__PURE__*/React.createElement("input", {
+    className: "w-fullh-auto mb-5"
+  }, msg && /*#__PURE__*/React.createElement("p", {
+    className: "text-pink-500"
+  }, msg), /*#__PURE__*/React.createElement("input", {
     type: "text",
     name: "",
     value: activity,
@@ -271,11 +291,25 @@ function Todo() {
     onClick: cencelUpdate
   }, "cencel")), /*#__PURE__*/React.createElement("ul", {
     className: "w-full px-4v list-disc"
-  }, todos.map(item => {
+  }, todos.length == 0 && /*#__PURE__*/React.createElement("h1", {
+    className: "text-center mt-5 text-lg font-medium"
+  }, "belum ada aktivitas"), todos.map(item => {
     return /*#__PURE__*/React.createElement("li", {
       key: item.id,
       className: "p-2"
-    }, item.activity, /*#__PURE__*/React.createElement("button", {
+    }, /*#__PURE__*/React.createElement("label", {
+      htmlFor: item.id,
+      className: !item.done ? "py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer mr-3 bg-pink-500" : "py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer mr-3 bg-lime-300"
+    }, !item.done ? "belum selesai" : "sudah selesai"), /*#__PURE__*/React.createElement("input", {
+      type: "checkbox",
+      name: "",
+      id: item.id,
+      className: "mr-2 hidden",
+      checked: item.done,
+      onChange: done.bind(this, item)
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "text-lg font-medium text-slate-800"
+    }, item.activity), /*#__PURE__*/React.createElement("button", {
       className: "py-1 px-2 shadow-slate-300 shadow-md rounded-lg cursor-pointer ml-3",
       onClick: editTodo.bind(this, item)
     }, "edit"), /*#__PURE__*/React.createElement("button", {
